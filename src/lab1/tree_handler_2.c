@@ -30,7 +30,7 @@ void addChild(Node* parent, int val){
 
 void printTree(Node* root, int depth){
     if(!root) return;
-    for(int i = 0; i < depth; ++i) printf(" ");
+    for(int i = 0; i < depth; ++i) printf("    ");
     printf("%d\n", root->data);
     printTree(root->firstChild, depth + 1);
     printTree(root->nextSibling, depth);
