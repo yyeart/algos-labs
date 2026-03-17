@@ -12,8 +12,16 @@ Node* initNode(char* data){
     Node* n = (Node*)malloc(sizeof(Node));
     if(!n) exit(1);
     strcpy(n->data, data);
+    n->data[15] = '\0';
     n->left = n->right = NULL;
     return n;
+}
+
+void freeTree(Node* root){
+    if(!root) return;
+    freeTree(root->left);
+    freeTree(root->right);
+    free(root);
 }
 
 int isEqual(Node* a, Node* b){
@@ -38,6 +46,16 @@ int priority(char a){
     return 0;
 }
 
+void processOperator(Node** nodes, int* ns, char* ops, int* os){
+    Node *r = nodes[--(*ns)];
+    Node *l = nodes[--(*ns)];
+    char opS[2] = {ops[--(*os)], 0};
+    Node* opN = initNode(opS);
+    opN->left = l;
+    opN->right = r;
+    nodes[(*ns)++] = opN;
+}
+
 Node* buildTree(char* expr){
     Node* nodes[100];
     char ops[100];
@@ -57,23 +75,13 @@ Node* buildTree(char* expr){
         }
         else if(expr[i] == ')'){
             while (os > 0 && ops[os - 1] != '('){
-                Node* r = nodes[--ns];
-                Node* l = nodes[--ns];
-                char opStr[2] = {ops[--os], 0};
-                Node *opNode = initNode(opStr);
-                opNode->left = l; opNode->right = r;
-                nodes[ns++] = opNode;
+                processOperator(nodes, &ns, ops, &os);
             }
             os--;
         }
         else{
             while(os > 0 && ops[os - 1] != '(' && priority(ops[os-1]) >= priority(expr[i])){
-                Node *r = nodes[--ns];
-                Node *l = nodes[--ns];
-                char opStr[2] = {ops[--os], 0};
-                Node *opNode = initNode(opStr);
-                opNode->left = l, opNode->right = r;
-                nodes[ns++] = opNode;
+                processOperator(nodes, &ns, ops, &os);
             }
             ops[os++] = expr[i];
         }
@@ -89,6 +97,14 @@ Node* buildTree(char* expr){
     return nodes[0];
 }
 
+Node* copyTree(Node* root){
+    if(!root) return NULL;
+    Node *newNode = initNode(root->data);
+    newNode->left = copyTree(root->left);
+    newNode->right = copyTree(root->right);
+    return newNode;
+}
+
 Node* factorize(Node *root){
     if(!root) return NULL;
     root->left = factorize(root->left);
@@ -97,36 +113,43 @@ Node* factorize(Node *root){
     if(strcmp(root->data, "+") == 0){
         Node *L = root->left, *R = root->right;
         if(L && R && strcmp(L->data, "*") == 0 && strcmp(R->data, "*") == 0){
-            Node *common = NULL, *remL = NULL, *remR = NULL;
+            Node *common = NULL, *ostatokL = NULL, *ostatokR = NULL;
             
+            // (A*B)+(A*C)
             if(isEqual(L->left, R->left)) {
                 common = L->left;
-                remL = L->right;
-                remR = R->right;
+                ostatokL = L->right;
+                ostatokR = R->right;
             }
+            // (A*B)+(C*A)
             else if(isEqual(L->left, R->right)) {
                 common = L->left;
-                remL = L->right;
-                remL = R->left;
+                ostatokL = L->right;
+                ostatokL = R->left;
             }
+            // (B*A)+(A*C)
             else if(isEqual(L->right, R->left)){
                 common = L->right;
-                remL = L->left;
-                remR = R->right;
+                ostatokL = L->left;
+                ostatokR = R->right;
             }
+            // (B*A)+(C*A)
             else if(isEqual(L->right, R->right)){
                 common = L->right;
-                remL = L->left;
-                remR = R->left;
+                ostatokL = L->left;
+                ostatokR = R->left;
             }
 
             if(common) {
-                Node *newPlus = initNode("+");
-                newPlus->left = remL;
-                newPlus->right = remR;
-                Node *newMul = initNode("*");
-                newMul->left = common;
+                Node* newCommon = copyTree(common);
+                Node* newPlus = initNode("+");
+                newPlus->left = copyTree(ostatokL);
+                newPlus->right = copyTree(ostatokR);
+                Node* newMul = initNode("*");
+                newMul->left = newCommon;
                 newMul->right = newPlus;
+
+                freeTree(root);
                 return newMul;
             }
         }
@@ -148,19 +171,25 @@ void printInfix(Node *root){
 }
 
 int main(void){
-    char expr[100] = "a*b+a*c";
-    printf("Исходное выражение: %s\n", expr);
+    char* tests[] = {
+        "a*b*d+a*b*c",
+        "x*y+z*w",
+        "a*b*c+a*b*d",
+        "(x+y)*a+(x+y)*b"
+    };
+    for(int i = 0; i < 4; ++i){
+        printf("\nТест %d: %s\n", i+1, tests[i]);
+        Node* root = buildTree(tests[i]);
+        printf("Исходное дерево:\n");
+        printTree(root, 0);
+        root = factorize(root);
+        printf("\nПосле преобразования:\n");
+        printInfix(root);
+        printf("\nДерево:\n");
+        printTree(root, 0);
 
-    Node *root = buildTree(expr);
-    printf("\nСтруктура дерева:\n");
-    printTree(root, 0);
-
-    root = factorize(root);
-
-    printf("\nПосле вынесения множителя\n");
-    printInfix(root);
-    printf("\nНовое дерево:\n");
-    printTree(root, 0);
+        freeTree(root);
+    }
 
     return 0;
 }
