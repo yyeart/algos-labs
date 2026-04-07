@@ -1,0 +1,10 @@
+1 qwerty 3.14
+1 asdf 5.00
+3 
+1 dyz 4.50
+1 uiop 7.78
+3 
+4 asdf -> 5.00
+2 dyz
+3 
+4 qwerty -> 3.14
