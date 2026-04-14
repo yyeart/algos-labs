@@ -80,6 +80,7 @@ Node* createNode(char* key, double value){
 void insertFix(Node** root, Node* z){
     while(z->parent->color == RED){
         if(z->parent == z->parent->parent->left){
+            // если дядя Y красный
             Node* y = z->parent->parent->right;
             if(y->color == RED){
                 z->parent->color = BLACK;
@@ -88,10 +89,12 @@ void insertFix(Node** root, Node* z){
                 z = z->parent->parent;
             }
             else {
+                // если дядя Y черный, а z - правый ребенок
                 if(z == z->parent->right){
                     z = z->parent;
                     leftRotate(root, z);
                 }
+                // если дядя Y черный, а z - левый ребенок
                 z->parent->color = BLACK;
                 z->parent->parent->color = RED;
                 rightRotate(root, z->parent->parent);
@@ -192,23 +195,27 @@ void deleteFix(Node** root, Node* x){
     while(x != *root && x->color == BLACK){
         if(x == x->parent->left){
             Node* w = x->parent->right;
+            // брат красный
             if(w->color == RED){
                 w->color = BLACK;
                 x->parent->color = RED;
                 leftRotate(root, x->parent);
                 w = x->parent->right;
             }
+            // брат черный и оба ребенка черные
             if(w->left->color == BLACK && w->right->color == BLACK){
                 w->color = RED;
                 x = x->parent;
             }
             else {
+                // брат черный, правый ребенок черный
                 if(w->right->color == BLACK){
                     w->left->color = BLACK;
                     w->color = RED;
                     rightRotate(root, w);
                     w = x->parent->right;
                 }
+                // брат черный, левый ребеной черный
                 w->color = x->parent->color;
                 x->parent->color = BLACK;
                 w->right->color = BLACK;
@@ -253,6 +260,7 @@ void deleteNode(Node** root, char* key){
     Node* y = z;
     Node* x;
     Color yOriginal = y->color;
+    // если 1 ребенок
     if(z->left == NIL){
         x = z->right;
         transplant(root, z, z->right);
