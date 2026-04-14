@@ -1,10 +1,71 @@
-1 qwerty 3.14
-1 asdf 5.00
+1 alpha 1.10
+1 beta 2.20
+1 gamma 3.30
+1 delta 4.40
+1 epsilon 5.50
+1 zeta 6.60
+1 eta 7.70
+1 theta 8.80
+1 iota 9.90
+1 kappa 10.00
+1 lambda 11.10
+1 mu 12.20
+1 nu 13.30
+1 xi 14.40
+1 omicron 15.50
+1 pi 16.60
+1 rho 17.70
+1 sigma 18.80
+1 tau 19.90
+1 omega 20.00
+1 phi 21.10
+1 psi 22.20
 3 
-1 dyz 4.50
-1 uiop 7.78
+         zeta(6.60)[B]
+            xi(14.40)[R]
+      theta(8.80)[B]
+               tau(19.90)[R]
+            sigma(18.80)[B]
+         rho(17.70)[R]
+               psi(22.20)[R]
+            pi(16.60)[B]
+               phi(21.10)[R]
+   omicron(15.50)[R]
+            omega(20.00)[R]
+         nu(13.30)[B]
+      mu(12.20)[B]
+         lambda(11.10)[B]
+kappa(10.00)[B]
+         iota(9.90)[B]
+      gamma(3.30)[B]
+         eta(7.70)[B]
+   epsilon(5.50)[R]
+         delta(4.40)[B]
+      beta(2.20)[B]
+         alpha(1.10)[B]
+4 theta -> 8.80
+4 fake -> not found
+2 delta
+2 iota
+2 omega
 3 
-4 asdf -> 5.00
-2 dyz
-3 
-4 qwerty -> 3.14
+         zeta(6.60)[B]
+            xi(14.40)[R]
+      theta(8.80)[B]
+               tau(19.90)[R]
+            sigma(18.80)[B]
+         rho(17.70)[R]
+               psi(22.20)[R]
+            pi(16.60)[B]
+               phi(21.10)[R]
+   omicron(15.50)[R]
+         nu(13.30)[B]
+      mu(12.20)[B]
+         lambda(11.10)[B]
+kappa(10.00)[B]
+      gamma(3.30)[B]
+         eta(7.70)[R]
+   epsilon(5.50)[B]
+      beta(2.20)[B]
+         alpha(1.10)[R]
+4 omega -> not found

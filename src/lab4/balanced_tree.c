@@ -19,6 +19,13 @@ void initNIL(){
     NIL->left = NIL->right = NIL->parent = NIL;
 }
 
+void freeTree(Node* root){
+    if(root == NIL) return;
+    freeTree(root->left);
+    freeTree(root->right);
+    free(root);
+}
+
 void leftRotate(Node** root, Node* x){
     if(x->right == NIL) return;
     Node* y = x->right;
@@ -121,7 +128,7 @@ void insert(Node** root, char* key, double value){
         int cmp = strcmp(z->key, x->key);
         if(cmp == 0){
             free(z);
-            return; // уникальные ключи
+            return; // дубликат ключа
         }
         else if(cmp < 0) {
             x = x->left;
@@ -153,16 +160,12 @@ Node* search(Node* root, char* key){
     return NIL;
 }
 
-void printTree(Node* root, int depth){
+void printTree(FILE* fo, Node* root, int depth){
     if(root == NIL) return;
-    if (root == root->left || root == root->right) {
-        printf("CYCLE DETECTED at %s\n", root->key);
-        return;
-    }
-    printTree(root->right, depth+1);
-    for(int i = 0; i < depth; ++i) printf("   ");
-    printf("%s(%.2f)[%c]\n", root->key, root->value, root->color == RED ? 'R' : 'B');
-    printTree(root->left, depth + 1);
+    printTree(fo, root->right, depth+1);
+    for(int i = 0; i < depth; ++i) fprintf(fo, "   ");
+    fprintf(fo, "%s(%.2f)[%c]\n", root->key, root->value, root->color == RED ? 'R' : 'B');
+    printTree(fo, root->left, depth+1);
 }
 
 Node* treeMin(Node* x){
@@ -263,7 +266,7 @@ void deleteNode(Node** root, char* key){
         yOriginal = y->color;
         x = y->right;
         if(y->parent == z){
-            x->parent = y;
+            if(x != NIL) x->parent = y;
         }
         else {
             transplant(root, y, y->right);
@@ -303,7 +306,7 @@ void processFile(const char *in, const char *out){
                 break;
             case 3:
                 fprintf(fo, "\n");
-                printTree(root, 0);
+                printTree(fo, root, 0);
                 break;
             case 4:
                 fscanf(fi, "%s", key);
@@ -314,6 +317,7 @@ void processFile(const char *in, const char *out){
                 break;
         }
     }
+    freeTree(root);
     fclose(fi);
     fclose(fo);
 }
@@ -321,5 +325,6 @@ void processFile(const char *in, const char *out){
 int main(void){
     initNIL();
     processFile("input.txt", "output.txt");
+    free(NIL);
     return 0;
 }
